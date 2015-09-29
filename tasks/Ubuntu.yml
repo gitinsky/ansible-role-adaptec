@@ -1,0 +1,24 @@
+- name: install python-httplib2 for uri module
+  apt: name=python-httplib2
+  
+- name: check if there are packages designed for {{ ansible_distribution_release }}
+  uri:
+      url: "http://hwraid.le-vert.net/ubuntu/dists/{{ ansible_distribution_release }}"
+      
+  register: distribution_support
+  failed_when: no
+
+- name: set distribution
+  set_fact:
+      distr: "{{ hwraid_le_vert_net_latest_distr if distribution_support.status == 404 else ansible_distribution_release  }}"
+
+- debug: msg="check status={{ distribution_support.status }} distr={{ distr }}"
+
+- name: add key
+  apt_key: url=http://hwraid.le-vert.net/debian/hwraid.le-vert.net.gpg.key
+
+- name: add hwraid.le-vert.net repo
+  apt_repository: repo='deb http://hwraid.le-vert.net/ubuntu {{ distr }} main' update_cache=yes
+  
+- name: install aacraid-status
+  apt: name=aacraid-status
