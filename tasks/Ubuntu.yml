@@ -20,5 +20,9 @@
 - name: add hwraid.le-vert.net repo
   apt_repository: repo='deb http://hwraid.le-vert.net/ubuntu {{ distr }} main' update_cache=yes
   
-- name: install aacraid-status
-  apt: name=aacraid-status
+- name: install packages
+  apt: name={{ item }}
+  with_items:
+      - aacraid-status
+      - megacli
+      - megaclisas-status
